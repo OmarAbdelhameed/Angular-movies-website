@@ -1,0 +1,68 @@
+.carousel-inner {
+  height: 700px;
+}
+
+.carousel-inner .carousel-item img {
+  height: 700px;
+  object-fit: cover;
+}
+
+.carousel-caption h2 {
+  color: #e50914;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.carousel-caption p {
+  color: #ffffff;
+}
+
+.rowposter {
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.rowimg {
+  max-height: 100px;
+  object-fit: contain;
+  width: 100%;
+  box-sizing: content-box;
+  margin-right: 7px;
+}
+
+.largeposter {
+  max-height: 300px;
+}
+
+.rowposter::-webkit-scrollbar {
+  display: none;
+}
+
+.rowposter div:hover {
+  transform: scale(1.09);
+  cursor: pointer;
+}
+
+.rowposter div {
+  min-width: 150px;
+  margin: 0 10px;
+  position: relative;
+  transition: transform 450ms;
+}
+
+i {
+  position: absolute;
+  color: #e50914;
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+.alert {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 20%;
+  z-index: 9999;
+}

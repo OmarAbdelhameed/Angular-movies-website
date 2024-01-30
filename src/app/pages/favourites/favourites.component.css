@@ -1,0 +1,38 @@
+.title {
+  margin-top: 100px;
+  color: #E50607;
+  text-align: center;
+}
+
+i {
+  font-size: 20px;
+  position: absolute;
+  color: red;
+}
+
+.rowposter div {
+  max-width: 150px;
+  margin: 10px 10px;
+  position: relative;
+  transition: transform 250ms;  
+}
+
+.rowposter div:hover {
+  transform: scale(1.09);
+  cursor: pointer;
+}
+
+.rowposter div img {
+  max-width: 100%;
+  object-fit: contain;
+  margin-right: 7px;
+  border-radius: 8px;
+}
+
+.alert {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 20%;
+  z-index: 9999;
+}

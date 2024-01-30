@@ -1,0 +1,8 @@
+1- make sure that you have nodejs and npm installed on your PC,
+	to do this run:
+	node -v
+	npm -v
+
+if you got thier versions then you have them, if you didn't, you need to set up them first
+
+2- set up angular cli version 14 using the following command: npm i @angular/cli@14

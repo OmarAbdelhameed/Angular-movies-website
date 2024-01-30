@@ -1,0 +1,34 @@
+<h1 class="title">Favourite movies</h1>
+<div class="container">
+  <div class="row">
+    <div class="rowposter mt-3 p-2" style="display: flex; flex-wrap: wrap;">
+      <ng-container
+        *ngFor="let f of favourites$ | async"
+        style="margin: 0 10px"
+      >
+        <div class="col-2" style="position: relative">
+          <i
+            class="bi bi-heart-fill"
+            (click)="removeFromFavourites(f.movieId)"
+          ></i>
+          <img
+            src="{{ f.imgSrc }}"
+            class="rowimg largeposter"
+            alt="..."
+            [routerLink]="f.routerLink"
+          />
+        </div>
+      </ng-container>
+      <h3
+        *ngIf="favouritesLength === 0"
+        style="color: red; margin: 100px auto 0"
+      >
+        You Should Add Any Favourite Movies
+      </h3>
+    </div>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="showRemovedAlert">
+    Movie removed from favourites.
+  </div>
+</div>
