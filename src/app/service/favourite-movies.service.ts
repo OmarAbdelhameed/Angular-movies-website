@@ -6,38 +6,46 @@ import { favMovie } from '../model/favMovie';
   providedIn: 'root',
 })
 export class FavouriteMoviesService {
-  // get favourite movies from local storage
   favourites: BehaviorSubject<favMovie[]> = new BehaviorSubject<favMovie[]>(
-    // if favourites was deleted from local storage create it again
-    JSON.parse(localStorage.getItem('favourites') ?? '[]') || []
+    this.getFavouritesFromLocalStorage()
   );
 
   constructor() {}
 
   addToFavourites(movie: favMovie) {
-    // before adding to favourites, check if it is already there
     if (
-      this.favourites.value.find(
+      !this.favourites.value.find(
         (favMovie) => favMovie.movieId === movie.movieId
       )
     ) {
-      return;
+      this.favourites.next([...this.favourites.value, movie]);
+      this.updateFavourites();
     }
-
-    this.favourites.next([...this.favourites.value, movie]);
-    localStorage.setItem('favourites', JSON.stringify(this.favourites.value));
-    this.updateFavourites();
   }
 
   removeFromFavourites(movieId: number) {
-    let favMovies = this.favourites.value;
-    favMovies = favMovies.filter((movie) => movie.movieId !== movieId);
+    let favMovies = this.favourites.value.filter(
+      (movie) => movie.movieId !== movieId
+    );
     this.favourites.next(favMovies);
-    localStorage.setItem('favourites', JSON.stringify(favMovies));
     this.updateFavourites();
   }
 
   updateFavourites() {
-    this.favourites.next(JSON.parse(localStorage.getItem('favourites') ?? ''));
+    try {
+      localStorage.setItem('favourites', JSON.stringify(this.favourites.value));
+    } catch (error) {
+      console.error('Failed to update favourites in localStorage:', error);
+    }
+  }
+
+  getFavouritesFromLocalStorage(): favMovie[] {
+    try {
+      const favourites = JSON.parse(localStorage.getItem('favourites') ?? '[]');
+      return Array.isArray(favourites) ? favourites : [];
+    } catch (error) {
+      console.error('Failed to get favourites from localStorage:', error);
+      return [];
+    }
   }
 }

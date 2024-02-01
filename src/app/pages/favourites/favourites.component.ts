@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { favMovie } from 'src/app/model/favMovie';
 import { FavouriteMoviesService } from 'src/app/service/favourite-movies.service';
 
@@ -9,7 +9,8 @@ import { FavouriteMoviesService } from 'src/app/service/favourite-movies.service
   templateUrl: './favourites.component.html',
   styleUrls: ['./favourites.component.css'],
 })
-export class FavouritesComponent implements OnInit {
+export class FavouritesComponent implements OnDestroy {
+  private destroy$ = new Subject<void>();
   favourites$: Observable<favMovie[]>;
   favouritesLength: number = 0;
   showRemovedAlert: boolean = false;
@@ -17,8 +18,9 @@ export class FavouritesComponent implements OnInit {
     private favouriteService: FavouriteMoviesService,
     private title: Title
   ) {
-    
-    this.favourites$ = this.favouriteService.favourites;
+    this.favourites$ = this.favouriteService.favourites.pipe(
+      takeUntil(this.destroy$)
+    );
     this.favourites$.subscribe((favMovies) => {
       this.favouritesLength = favMovies.length;
     });
@@ -35,5 +37,8 @@ export class FavouritesComponent implements OnInit {
     this.triggerRemovedAlert();
   }
 
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MovieApiServiceService } from 'src/app/service/movie-api-service.service';
-import { Title,Meta } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { FavouriteMoviesService } from 'src/app/service/favourite-movies.service';
-import { log } from 'console';
+import { Observable, Subscription } from 'rxjs';
+import { IMovie, IMovieResult } from 'src/app/model/IMovie';
 
 @Component({
   selector: 'app-home',
@@ -23,29 +24,32 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  bannerResult: any = [];
-  trendingMovieResult: any = [];
-  actionMovieResult: any = [];
-  adventureMovieResult: any = [];
-  animationMovieResult: any = [];
-  comedyMovieResult: any = [];
-  documentaryMovieResult: any = [];
-  sciencefictionMovieResult: any = [];
-  thrillerMovieResult: any = [];
-
+  private subscriptions: Subscription[] = [];
+  bannerResult: IMovieResult[] = [];
+  trendingMovieResult: IMovieResult[] = [];
+  actionMovieResult: IMovieResult[] = [];
+  adventureMovieResult: IMovieResult[] = [];
+  animationMovieResult: IMovieResult[] = [];
+  comedyMovieResult: IMovieResult[] = [];
+  documentaryMovieResult: IMovieResult[] = [];
+  scienceFictionMovieResult: IMovieResult[] = [];
+  thrillerMovieResult: IMovieResult[] = [];
   showAddedAlert: boolean = false;
   showRemovedAlert: boolean = false;
 
   ngOnInit(): void {
-    this.bannerData();
-    this.trendingData();
-    this.actionMovie();
-    this.adventureMovie();
-    this.comedyMovie();
-    this.animationMovie();
-    this.documentaryMovie();
-    this.sciencefictionMovie();
-    this.thrillerMovie();
+    this.fetchMovies('banner', this.service.bannerApiData());
+    this.fetchMovies('trending', this.service.trendingMovieApiData());
+    this.fetchMovies('action', this.service.fetchActionMovies());
+    this.fetchMovies('adventure', this.service.fetchAdventureMovies());
+    this.fetchMovies('animation', this.service.fetchAnimationMovies());
+    this.fetchMovies('comedy', this.service.fetchComedyMovies());
+    this.fetchMovies('documentary', this.service.fetchDocumentaryMovies());
+    this.fetchMovies(
+      'sciencefiction',
+      this.service.fetchScienceFictionMovies()
+    );
+    this.fetchMovies('thriller', this.service.fetchThrillerMovies());
   }
 
   triggerAddedAlert() {
@@ -75,7 +79,6 @@ export class HomeComponent implements OnInit {
       imgSrc: imgUrl + poster_path,
       routerLink: routerLink,
     };
-    console.log(movie);
     this.favouriteService.addToFavourites(movie);
     this.triggerAddedAlert();
   }
@@ -86,69 +89,43 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  // bannerdata
-  bannerData() {
-    this.service.bannerApiData().subscribe((result) => {
-      // console.log(result, 'bannerresult#');
-      this.bannerResult = result.results;
+  fetchMovies(type: string, observable: Observable<IMovie>): void {
+    const sub = observable.subscribe({
+      next: (result) => {
+        switch (type) {
+          case 'banner':
+            this.bannerResult = result.results;
+            break;
+          case 'trending':
+            this.trendingMovieResult = result.results;
+            break;
+          case 'action':
+            this.actionMovieResult = result.results;
+            break;
+          case 'adventure':
+            this.adventureMovieResult = result.results;
+            break;
+          case 'animation':
+            this.animationMovieResult = result.results;
+            break;
+          case 'comedy':
+            this.comedyMovieResult = result.results;
+            break;
+          case 'documentary':
+            this.documentaryMovieResult = result.results;
+            break;
+          case 'sciencefiction':
+            this.scienceFictionMovieResult = result.results;
+            break;
+          case 'thriller':
+            this.thrillerMovieResult = result.results;
+            break;
+          default:
+            console.error(`Unknown movie type: ${type}`);
+        }
+      },
+      error: (error) => console.error(`Failed to fetch ${type} movies:`, error),
     });
-  }
-
-  trendingData() {
-    this.service.trendingMovieApiData().subscribe((result) => {
-      console.log(result, 'trendingresult#');
-      this.trendingMovieResult = result.results;
-      // this.trendingMovieResult
-    });
-  }
-
-  // action
-  actionMovie() {
-    this.service.fetchActionMovies().subscribe((result) => {
-      this.actionMovieResult = result.results;
-    });
-  }
-
-  // adventure
-  adventureMovie() {
-    this.service.fetchAdventureMovies().subscribe((result) => {
-      this.adventureMovieResult = result.results;
-    });
-  }
-
-  // animation
-  animationMovie() {
-    this.service.fetchAnimationMovies().subscribe((result) => {
-      this.animationMovieResult = result.results;
-    });
-  }
-
-  // comedy
-  comedyMovie() {
-    this.service.fetchComedyMovies().subscribe((result) => {
-      this.comedyMovieResult = result.results;
-    });
-  }
-
-  // documentary
-  documentaryMovie() {
-    this.service.fetchDocumentaryMovies().subscribe((result) => {
-      this.documentaryMovieResult = result.results;
-    });
-  }
-
-  // science-fiction
-  sciencefictionMovie() {
-    this.service.fetchScienceFictionMovies().subscribe((result) => {
-      this.sciencefictionMovieResult = result.results;
-    });
-  }
-
-  // thriller
-  thrillerMovie() {
-    this.service.fetchThrillerMovies().subscribe((result) => {
-      this.thrillerMovieResult = result.results;
-    });
+    this.subscriptions.push(sub);
   }
 }
-
